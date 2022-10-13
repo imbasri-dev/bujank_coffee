@@ -1,5 +1,5 @@
 const express = require("express");
-
+const morgan = require("morgan");
 // importdb
 const postgresDb = require("./src/config/postgre");
 
@@ -18,6 +18,11 @@ postgresDb
         server.use(express.json());
         server.use(express.urlencoded({ extended: false }));
         // user router mainRouter
+        server.use(
+            morgan(
+                ":method :url :status :res[content-length] - :response-time ms"
+            )
+        );
         server.use(mainRouter);
         // server ready menerima request di port
         server.listen(PORT, () => {
