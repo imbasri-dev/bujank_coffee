@@ -17,7 +17,7 @@ const create = async (req, res) => {
         const response = await productRepo.create(req.body);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "account created successfully."),
+                msg: (response.text = "Product created successfully."),
                 data: response.rows,
             },
         });
@@ -32,7 +32,7 @@ const edit = async (req, res) => {
         const response = await productRepo.edit(req.body, req.params);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "Promo has ben changed"),
+                msg: (response.text = "Product has ben changed"),
                 data: response.rows,
             },
         });
@@ -46,8 +46,8 @@ const deleted = async (req, res) => {
     try {
         const response = await productRepo.deleted(req.params);
         sendResponse.success(res, 202, {
-            msg: (response.text = "Size delete succesfully"),
-            data: response.rows,
+            msg: (response.text = "Product delete succesfully"),
+            delete: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Internal Server Error");

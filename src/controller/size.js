@@ -17,7 +17,7 @@ const create = async (req, res) => {
         const response = await sizeRepo.create(req.body);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "account created successfully."),
+                msg: (response.text = "Size created successfully."),
                 data: response.rows,
             },
         });
@@ -47,7 +47,7 @@ const deleted = async (req, res) => {
         const response = await sizeRepo.deleted(req.params);
         sendResponse.success(res, 202, {
             msg: (response.text = "Size delete succesfully"),
-            data: response.rows,
+            delete: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Internal Server Error");

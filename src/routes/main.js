@@ -5,6 +5,7 @@ const userDataRouter = require("./userdata");
 const sizeRouter = require("./size");
 const promoRouter = require("./promo");
 const productRouter = require("./product");
+const deliveryRouter = require("./delivery");
 const authRouter = require("./auth");
 
 // main router
@@ -16,6 +17,7 @@ mainRouter.use(`${prefix}/profile`, userDataRouter);
 mainRouter.use(`${prefix}/size`, sizeRouter);
 mainRouter.use(`${prefix}/promo`, promoRouter);
 mainRouter.use(`${prefix}/product`, productRouter);
+mainRouter.use(`${prefix}/delivery`, deliveryRouter);
 mainRouter.use(`${prefix}/auth`, authRouter);
 
 module.exports = mainRouter;

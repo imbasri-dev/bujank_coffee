@@ -15,7 +15,7 @@ const editProfile = async (req, res) => {
     try {
         const response = await userDataRepo.editProfile(req.body, req.params);
         sendResponse.success(res, 202, {
-            msg: (response.text = "data changed successfully"),
+            msg: (response.text = "Profile changed successfully"),
             data: response.rows,
         });
     } catch (err) {
@@ -28,8 +28,8 @@ const deleted = async (req, res) => {
         const response = await userDataRepo.deleted(req.params);
         sendResponse.success(res, 202, {
             result: {
-                msg: (response.text = "data delete succesfully"),
-                data: response.rows.id,
+                msg: (response.text = "Profile delete succesfully"),
+                delete: response.rows.id,
             },
         });
     } catch (err) {

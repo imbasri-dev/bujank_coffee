@@ -1,9 +1,9 @@
-const promoRepo = require("../repo/promo");
+const deliveryRepo = require("../repo/delivery");
 const sendResponse = require("../helpers/response");
 
 const get = async (req, res) => {
     try {
-        const response = await promoRepo.get();
+        const response = await deliveryRepo.get();
         sendResponse.success(res, 200, {
             data: response.rows,
         });
@@ -14,10 +14,10 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const response = await promoRepo.create(req.body);
+        const response = await deliveryRepo.create(req.body);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "Promo created successfully."),
+                msg: (response.text = "Delivery created successfully."),
                 data: response.rows,
             },
         });
@@ -29,10 +29,10 @@ const create = async (req, res) => {
 
 const edit = async (req, res) => {
     try {
-        const response = await promoRepo.edit(req.body, req.params);
+        const response = await deliveryRepo.edit(req.body, req.params);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "Promo has ben changed"),
+                msg: (response.text = "Delivery has ben changed"),
                 data: response.rows,
             },
         });
@@ -44,19 +44,19 @@ const edit = async (req, res) => {
 
 const deleted = async (req, res) => {
     try {
-        const response = await promoRepo.deleted(req.params);
+        const response = await deliveryRepo.deleted(req.params);
         sendResponse.success(res, 202, {
-            msg: (response.text = "Promo delete succesfully"),
+            msg: (response.text = "Delivery delete succesfully"),
             delete: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Internal Server Error");
     }
 };
-const sizeController = {
+const deliveryController = {
     get,
     create,
     edit,
     deleted,
 };
-module.exports = sizeController;
+module.exports = deliveryController;

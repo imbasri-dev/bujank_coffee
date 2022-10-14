@@ -58,8 +58,8 @@ const deleted = async (req, res) => {
     try {
         const response = await userRepo.deleted(req.params);
         sendResponse.success(res, 202, {
-            data: (response.text = "data delete succesfully"),
-            status: (res.status = 202),
+            msg: (response.text = "data delete succesfully"),
+            delete: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, {
