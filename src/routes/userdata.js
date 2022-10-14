@@ -6,7 +6,7 @@ const {
     deleted,
 } = require("../controller/userdata");
 
-userdataRouter.get("/", getDataUserId);
+userdataRouter.get("/:user_id", getDataUserId);
 userdataRouter.patch("/:user_id", editProfile);
 userdataRouter.delete("/:user_id", deleted);
 module.exports = userdataRouter;

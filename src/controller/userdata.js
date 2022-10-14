@@ -3,11 +3,9 @@ const sendResponse = require("../helpers/response");
 
 const getDataUserId = async (req, res) => {
     try {
-        const response = await userDataRepo.getId();
+        const response = await userDataRepo.getId(req.params);
         sendResponse.success(res, 200, {
-            result: {
-                data: response,
-            },
+            data: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Server Internal Error");
@@ -40,6 +38,7 @@ const deleted = async (req, res) => {
         });
     }
 };
+
 const userController = {
     getDataUserId,
     editProfile,

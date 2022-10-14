@@ -57,12 +57,12 @@ const editPassword = async (req, res) => {
 const deleted = async (req, res) => {
     try {
         const response = await userRepo.deleted(req.params);
-        res.status(202).json({
+        sendResponse.success(res, 202, {
             data: (response.text = "data delete succesfully"),
             status: (res.status = 202),
         });
     } catch (err) {
-        res.status(500).json({
+        sendResponse.error(res, 500, {
             msg: "Internal Server Error",
         });
     }
