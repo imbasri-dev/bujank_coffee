@@ -13,12 +13,12 @@ const get = () => {
     });
 };
 
-const searchPromo = (queryParams) => {
+const searchPromo = (queryparams) => {
     return new Promise((resolve, reject) => {
         const query =
-            "select p.id,p.product_id,pr.name,p.* from promos p inner join products pr on p.product_id = pr.id where lower(code) like lower($1) ";
-        const { code } = queryParams;
-        postgresDb.query(query, [`%$${code}%`], (err, result) => {
+            "select promos.id, promos.product_id, products.name, promos.* from promos inner join products on products.id = promos.product_id where lower(code) LIKE lower($1)";
+        const { code } = queryparams;
+        postgresDb.query(query, [`%${code}%`], (err, result) => {
             if (err) {
                 console.log(err);
                 return reject(err);

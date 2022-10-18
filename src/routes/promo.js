@@ -14,7 +14,7 @@ const {
 } = require("../controller/promo");
 
 promoRouter.get("/", get);
-promoRouter.get("/", searchPromo);
+promoRouter.get("/search", searchPromo);
 promoRouter.post("/add", isLogin(), allowRole("admin"), create);
 promoRouter.patch("/:id", isLogin(), allowRole("admin"), edit);
 promoRouter.delete("/:id", isLogin(), allowRole("admin"), deleted);
