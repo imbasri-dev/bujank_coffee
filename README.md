@@ -20,7 +20,9 @@ Bujank Coffee is everyone can drinks
 
 ## Built With
 
-Nodejs , Express
+![nodejs](https://img.shields.io/badge/nodejs-16-brightgreen)
+![expressjs](https://img.shields.io/badge/expressjs-4-lightgrey)
+![postgreSQL](https://img.shields.io/badge/postgreSQL-11-blue)
 
 ## Features
 
