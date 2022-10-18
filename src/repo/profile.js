@@ -1,10 +1,9 @@
 const postgresDb = require("../config/postgre");
-let imageUpload = require("../middleware/upload");
 
-const getId = (params) => {
+const getId = (token) => {
     return new Promise((resolve, reject) => {
         const query = "select * from profiles where user_id = $1";
-        postgresDb.query(query, [params.user_id], (err, result) => {
+        postgresDb.query(query, [token], (err, result) => {
             if (err) {
                 console.log(err);
                 return reject(err);

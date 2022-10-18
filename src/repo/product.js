@@ -38,7 +38,7 @@ const getAll = (queryParams) => {
         }
         if (queryParams.category) {
             if (queryParams.search) {
-                query += ` and where lower(category) like lower('${queryParams.category}')`;
+                query += ` and lower(category) like lower('${queryParams.category}')`;
             } else {
                 query += ` where lower(category) like lower('${queryParams.category}')`;
             }
@@ -65,10 +65,12 @@ const getAll = (queryParams) => {
             query =
                 "select pr.*,p.code,p.valid,p.discount,tr.qty from products pr inner join promos p on pr.id = p.product_id inner join transactions tr on pr.id = tr.product_id order by tr.qty desc";
         }
+
         let page = Number(queryParams.page);
         let limit = Number(queryParams.limit);
         let offset = (page - 1) * limit;
         query += ` limit ${limit} offset ${offset}`;
+
         // page
         postgresDb.query(query, (err, result) => {
             if (err) {

@@ -11,8 +11,8 @@ const {
     editPassword,
     deleted,
 } = require("../controller/user");
-userRouter.get("/", isLogin(), allowRole("admin"), get);
-userRouter.get("/:id", isLogin(), allowRole("admin"), getId);
+userRouter.get("/all", isLogin(), allowRole("admin"), get);
+userRouter.get("/", isLogin(), allowRole("admin", "user"), getId);
 userRouter.post(
     "/register",
     validate.body("email", "password", "phone_number"),

@@ -38,7 +38,7 @@ const login = (body) => {
 
                     // 3. Process Login => create jwt => return jwt to users
                     const payload = {
-                        user_id: response.rows[0].id,
+                        id: response.rows[0].id,
                         email,
                         role: response.rows[0].role,
                     };
@@ -55,6 +55,7 @@ const login = (body) => {
                                 return reject({ err });
                             }
                             return resolve({
+                                id: payload.id,
                                 email: payload.email,
                                 role: payload.role,
                                 token,

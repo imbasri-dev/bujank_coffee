@@ -20,7 +20,7 @@ transactionRouter.get(
     historyUser
 );
 transactionRouter.get("/all", isLogin(), allowRole("admin"), get);
-transactionRouter.post("/add", isLogin(), allowRole("admin"), create);
+transactionRouter.post("/add", isLogin(), allowRole("admin", "user"), create);
 transactionRouter.patch("/:id", isLogin(), allowRole("admin", "user"), edit);
 transactionRouter.delete(
     "/:id",

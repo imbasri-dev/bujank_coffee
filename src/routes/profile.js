@@ -3,6 +3,7 @@ const profileRouter = express.Router();
 // middleware;
 const isLogin = require("../middleware/isLogin");
 const allowedRole = require("../middleware/allowRole");
+let imageUpload = require("../middleware/upload");
 
 const {
     getDataUserId,
@@ -10,7 +11,18 @@ const {
     deleted,
 } = require("../controller/profile");
 
-profileRouter.get("/:user_id", isLogin(), allowedRole("user"), getDataUserId);
-profileRouter.patch("/:user_id", editProfile);
+profileRouter.get(
+    "/id",
+    isLogin(),
+    allowedRole("user", "admin"),
+    getDataUserId
+);
+profileRouter.patch(
+    "/:user_id",
+    isLogin(),
+    allowedRole("user"),
+    imageUpload.single("image"),
+    editProfile
+);
 profileRouter.delete("/:user_id", deleted);
 module.exports = profileRouter;

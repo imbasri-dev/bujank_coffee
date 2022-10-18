@@ -12,15 +12,11 @@ const get = () => {
         });
     });
 };
-const historyUser = (queryParams) => {
+const historyUser = (token) => {
     return new Promise((resolve, reject) => {
-        let query =
-            "select u.email,pr.name,pr.image,pr.price,tr.status from transactions tr inner join users u on tr.user_id = u.id inner join products pr on tr.product_id = pr.id inner join profiles pf on u.id = pf.user_id";
-        console.log(queryParams);
-        if (queryParams.email) {
-            query += ` where lower(email) like lower('${queryParams.email}')`;
-        }
-        postgresDb.query(query, (err, result) => {
+        let query = `select u.email,pr.name,pr.image,pr.price,tr.status from transactions tr inner join users u on tr.user_id = u.id inner join products pr on tr.product_id = pr.id inner join profiles pf on u.id = pf.user_id  where u.id = $1`;
+
+        postgresDb.query(query, [token], (err, result) => {
             if (err) {
                 return reject(err);
             }

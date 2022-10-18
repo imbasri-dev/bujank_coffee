@@ -13,7 +13,7 @@ const get = async (req, res) => {
 };
 const historyUser = async (req, res) => {
     try {
-        const response = await transactionRepo.historyUser(req.query);
+        const response = await transactionRepo.historyUser(req.userPayload.id);
         sendResponse.success(res, 200, {
             data: response.rows,
         });

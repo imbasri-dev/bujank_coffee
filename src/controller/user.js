@@ -13,7 +13,7 @@ const get = async (req, res) => {
 };
 const getId = async (req, res) => {
     try {
-        const response = await userRepo.getId(req.params);
+        const response = await userRepo.getId(req.userPayload.id);
         sendResponse.success(res, 200, {
             data: response.rows,
         });
@@ -33,13 +33,20 @@ const register = async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        sendResponse.error(res, 500, "Internal Server Error");
+        console.log(err.detail);
+        sendResponse.error(res, 500, {
+            err: err.name,
+            msg: err.detail,
+        });
     }
 };
 
 const editPassword = async (req, res) => {
     try {
-        const response = await userRepo.editPassword(req.body);
+        const response = await userRepo.editPassword(
+            req.body,
+            req.userPayload.id
+        );
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Password has ben changed"),

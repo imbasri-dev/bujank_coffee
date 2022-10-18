@@ -2,7 +2,7 @@ const profileRepo = require("../repo/profile");
 const sendResponse = require("../helpers/response");
 const getDataUserId = async (req, res) => {
     try {
-        const response = await profileRepo.getId(req.params);
+        const response = await profileRepo.getId(req.userPayload.id);
         sendResponse.success(res, 200, {
             result: response.rows,
         });
@@ -11,6 +11,9 @@ const getDataUserId = async (req, res) => {
     }
 };
 const editProfile = async (req, res) => {
+    if (req.file) {
+        req.body.image = req.file.path;
+    }
     try {
         const response = await profileRepo.editProfile(req.body, req.params);
         sendResponse.success(res, 202, {

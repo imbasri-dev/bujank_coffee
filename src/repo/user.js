@@ -14,10 +14,10 @@ const get = () => {
     });
 };
 
-const getId = (params) => {
+const getId = (token) => {
     return new Promise((resolve, reject) => {
-        const query = "select * from users where id = $1";
-        postgresDb.query(query, [params.id], (err, result) => {
+        const query = `select * from users where id = $1`;
+        postgresDb.query(query, [token], (err, result) => {
             if (err) {
                 console.log(err);
                 return reject(err);
@@ -62,11 +62,11 @@ const register = (body) => {
         });
     });
 };
-const editPassword = (body) => {
+const editPassword = (body, token) => {
     return new Promise((resolve, reject) => {
-        const { old_password, new_password, user_id } = body;
+        const { old_password, new_password } = body;
         const getPwdQuery = "select password from users where id = $1";
-        const getPwdValues = [user_id];
+        const getPwdValues = [token];
         postgresDb.query(getPwdQuery, getPwdValues, (err, response) => {
             if (err) {
                 console.log(err);
@@ -90,7 +90,7 @@ const editPassword = (body) => {
                     }
                     const editPwdQuery =
                         "update users set password = $1 where id = $2";
-                    const editPwdValues = [newHashedPassword, user_id];
+                    const editPwdValues = [newHashedPassword, token];
                     postgresDb.query(
                         editPwdQuery,
                         editPwdValues,
@@ -117,7 +117,6 @@ const deleted = (params) => {
                 console.log(err);
                 return reject(err);
             }
-            console.log(params.id);
             let deleteToUserId = `delete from users where id = (${params.user_id}) returning id`;
             console.log(deleteToUserId);
             postgresDb.query(deleteToUserId, (err, result) => {
