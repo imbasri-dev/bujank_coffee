@@ -1,9 +1,9 @@
 const productRepo = require("../repo/product");
 const sendResponse = require("../helpers/response");
-
-const get = async (req, res) => {
+const filter = async (req, res) => {
     try {
-        const response = await productRepo.get();
+        console.log(req.query);
+        const response = await productRepo.filterCategory(req.query);
         sendResponse.success(res, 200, {
             data: response.rows,
         });
@@ -11,10 +11,19 @@ const get = async (req, res) => {
         sendResponse.error(res, 500, "Internal Server Error");
     }
 };
-
+const getAll = async (req, res) => {
+    try {
+        const response = await productRepo.getAll(req.query);
+        sendResponse.success(res, 200, {
+            data: response.rows,
+        });
+    } catch (err) {
+        sendResponse.error(res, 500, "Internal Server Error");
+    }
+};
 const create = async (req, res) => {
     try {
-        const response = await productRepo.create(req.body);
+        const response = await productRepo.create(req.body, req.file.path);
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Product created successfully."),
@@ -29,7 +38,11 @@ const create = async (req, res) => {
 
 const edit = async (req, res) => {
     try {
-        const response = await productRepo.edit(req.body, req.params);
+        const response = await productRepo.edit(
+            req.body,
+            req.params,
+            req.file.path
+        );
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Product has ben changed"),
@@ -54,7 +67,8 @@ const deleted = async (req, res) => {
     }
 };
 const productController = {
-    get,
+    filter,
+    getAll,
     create,
     edit,
     deleted,

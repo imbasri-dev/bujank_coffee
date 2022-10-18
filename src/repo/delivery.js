@@ -2,7 +2,7 @@ const postgresDb = require("../config/postgre");
 
 const get = () => {
     return new Promise((resolve, reject) => {
-        const query = "select * from deliveries order by id asc";
+        const query = "select * from delivery order by id asc";
         postgresDb.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -15,26 +15,22 @@ const get = () => {
 
 const create = (body) => {
     return new Promise((resolve, reject) => {
-        const { method, shipping, minimum_distance, charge_cost } = body;
+        const { method, shipping } = body;
         const query =
-            "insert into deliveries (method,shipping,minimum_distance,charge_cost) values ($1,$2,$3,$4) returning *";
-        postgresDb.query(
-            query,
-            [method, shipping, minimum_distance, charge_cost],
-            (err, queryResult) => {
-                if (err) {
-                    console.log(err);
-                    return reject(err);
-                }
-                resolve(queryResult);
+            "insert into delivery (method,shipping) values ($1,$2) returning *";
+        postgresDb.query(query, [method, shipping], (err, queryResult) => {
+            if (err) {
+                console.log(err);
+                return reject(err);
             }
-        );
+            resolve(queryResult);
+        });
     });
 };
 
 const edit = (body, params) => {
     return new Promise((resolve, reject) => {
-        let query = "update deliveries set ";
+        let query = "update delivery set ";
         const values = [];
         Object.keys(body).forEach((key, idx, array) => {
             if (idx === array.length - 1) {
@@ -64,7 +60,7 @@ const edit = (body, params) => {
 
 const deleted = (params) => {
     return new Promise((resolve, reject) => {
-        const query = "delete from deliveries where id = $1 returning id";
+        const query = "delete from delivery where id = $1 returning id";
         postgresDb.query(query, [params.id], (err, queryResult) => {
             if (err) {
                 console.log(err);

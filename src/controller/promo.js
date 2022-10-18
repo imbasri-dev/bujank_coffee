@@ -11,6 +11,16 @@ const get = async (req, res) => {
         sendResponse.error(res, 500, "Internal Server Error");
     }
 };
+const searchPromo = async (req, res) => {
+    try {
+        const response = await promoRepo.searchPromo(req.query);
+        sendResponse.success(res, 200, {
+            data: response.rows,
+        });
+    } catch (err) {
+        sendResponse.error(res, 500, "Internal Server Error");
+    }
+};
 
 const create = async (req, res) => {
     try {
@@ -56,6 +66,7 @@ const deleted = async (req, res) => {
 const sizeController = {
     get,
     create,
+    searchPromo,
     edit,
     deleted,
 };

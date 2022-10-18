@@ -1,11 +1,10 @@
-const userDataRepo = require("../repo/userdata");
+const profileRepo = require("../repo/profile");
 const sendResponse = require("../helpers/response");
-
 const getDataUserId = async (req, res) => {
     try {
-        const response = await userDataRepo.getId(req.params);
+        const response = await profileRepo.getId(req.params);
         sendResponse.success(res, 200, {
-            data: response.rows,
+            result: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Server Internal Error");
@@ -13,7 +12,7 @@ const getDataUserId = async (req, res) => {
 };
 const editProfile = async (req, res) => {
     try {
-        const response = await userDataRepo.editProfile(req.body, req.params);
+        const response = await profileRepo.editProfile(req.body, req.params);
         sendResponse.success(res, 202, {
             msg: (response.text = "Profile changed successfully"),
             data: response.rows,
@@ -25,7 +24,7 @@ const editProfile = async (req, res) => {
 
 const deleted = async (req, res) => {
     try {
-        const response = await userDataRepo.deleted(req.params);
+        const response = await profileRepo.deleted(req.params);
         sendResponse.success(res, 202, {
             result: {
                 msg: (response.text = "Profile delete succesfully"),

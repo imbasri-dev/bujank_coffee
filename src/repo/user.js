@@ -1,8 +1,9 @@
 const postgresDb = require("../config/postgre");
-const brycpt = require("bcrypt"); //import hash
+const bcrypt = require("bcrypt"); //import hash
 const get = () => {
     return new Promise((resolve, reject) => {
-        const query = "select * from users order by id asc";
+        let query = `select * from users order by id asc`;
+        // paginasi biasanya diwakili dengan query dan limit
         postgresDb.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -26,27 +27,36 @@ const getId = (params) => {
     });
 };
 
-const create = (body) => {
+const register = (body) => {
     return new Promise((resolve, reject) => {
+        let query = `insert into users (email, password, phone_number) values ($1, $2, $3) returning id, email`;
         const { email, password, phone_number } = body;
-        // validasi email tidak boleh duplikasi
-        // hash Password
-        brycpt.hash(password, 10, (err, hashedPassword) => {
+        // Hash Password
+        bcrypt.hash(password, 10, (err, hashedPasswords) => {
             if (err) {
                 console.log(err);
                 return reject(err);
             }
-            const query =
-                "insert into users (email,password,phone_number) values ($1,$2,$3) returning id , email";
             postgresDb.query(
                 query,
-                [email, hashedPassword, phone_number],
-                (err, queryResult) => {
+                [email, hashedPasswords, phone_number],
+                (err, response) => {
                     if (err) {
                         console.log(err);
                         return reject(err);
                     }
-                    resolve(queryResult);
+                    let getIDUsers = response.rows[0].id;
+                    let load = {
+                        email: response.rows[0].email,
+                    };
+                    let addIdToProfile = `insert into profiles (user_id) values (${getIDUsers})`;
+                    console.log(addIdToProfile);
+                    postgresDb.query(addIdToProfile, (err, queryResult) => {
+                        if (err) {
+                            return reject({ err });
+                        }
+                        resolve({ data: load.email, queryResult });
+                    });
                 }
             );
         });
@@ -63,7 +73,7 @@ const editPassword = (body) => {
                 return reject({ err });
             }
             const hashedPassword = response.rows[0].password;
-            brycpt.compare(old_password, hashedPassword, (err, isSame) => {
+            bcrypt.compare(old_password, hashedPassword, (err, isSame) => {
                 if (err) {
                     console.log(err);
                     return reject({ err });
@@ -73,7 +83,7 @@ const editPassword = (body) => {
                         err: new Error("Old Password is Wrong!"),
                         statusCode: 403,
                     });
-                brycpt.hash(new_password, 10, (err, newHashedPassword) => {
+                bcrypt.hash(new_password, 10, (err, newHashedPassword) => {
                     if (err) {
                         console.log(err);
                         return reject({ err });
@@ -89,7 +99,6 @@ const editPassword = (body) => {
                                 console.log(err);
                                 return reject({ err });
                             }
-
                             return resolve(response);
                         }
                     );
@@ -99,23 +108,31 @@ const editPassword = (body) => {
     });
 };
 
+// karena foreign key dengan users maka dihapus user_id di bagian profiles baru hapus di users.id ya
 const deleted = (params) => {
     return new Promise((resolve, reject) => {
-        const query = "delete from users where id = $1";
-        postgresDb.query(query, [params.id], (err, queryResult) => {
+        let query = `delete from profiles where user_id = $1 returning user_id`;
+        postgresDb.query(query, [params.user_id], (err, response) => {
             if (err) {
                 console.log(err);
                 return reject(err);
             }
-            return resolve(queryResult);
+            console.log(params.id);
+            let deleteToUserId = `delete from users where id = (${params.user_id}) returning id`;
+            console.log(deleteToUserId);
+            postgresDb.query(deleteToUserId, (err, result) => {
+                if (err) {
+                    return reject({ err });
+                }
+                resolve(result);
+            });
         });
     });
 };
-
 const userRepo = {
     get,
     getId,
-    create,
+    register,
     editPassword,
     deleted,
 };

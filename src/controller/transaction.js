@@ -1,10 +1,20 @@
-const sizeRepo = require("../repo/size");
+const transactionRepo = require("../repo/transaction");
 const sendResponse = require("../helpers/response");
 
 const get = async (req, res) => {
     try {
-        const response = await sizeRepo.get();
-        sendResponse.success(res, 202, {
+        const response = await transactionRepo.get();
+        sendResponse.success(res, 200, {
+            data: response.rows,
+        });
+    } catch (err) {
+        sendResponse.error(res, 500, "Internal Server Error");
+    }
+};
+const historyUser = async (req, res) => {
+    try {
+        const response = await transactionRepo.historyUser(req.query);
+        sendResponse.success(res, 200, {
             data: response.rows,
         });
     } catch (err) {
@@ -14,10 +24,10 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const response = await sizeRepo.create(req.body);
+        const response = await transactionRepo.create(req.body);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "Size created successfully."),
+                msg: (response.text = "Transaction created successfully."),
                 data: response.rows,
             },
         });
@@ -29,10 +39,10 @@ const create = async (req, res) => {
 
 const edit = async (req, res) => {
     try {
-        const response = await sizeRepo.edit(req.body, req.params);
+        const response = await transactionRepo.edit(req.body, req.params);
         sendResponse.success(res, 201, {
             result: {
-                msg: (response.text = "Size has ben changed"),
+                msg: (response.text = "Transaction has ben changed"),
                 data: response.rows,
             },
         });
@@ -44,19 +54,21 @@ const edit = async (req, res) => {
 
 const deleted = async (req, res) => {
     try {
-        const response = await sizeRepo.deleted(req.params);
+        const response = await transactionRepo.deleted(req.params);
         sendResponse.success(res, 202, {
-            msg: (response.text = "Size delete succesfully"),
+            msg: (response.text = "Transaction delete succesfully"),
             delete: response.rows,
         });
     } catch (err) {
         sendResponse.error(res, 500, "Internal Server Error");
     }
 };
-const sizeController = {
+
+const transactionController = {
     get,
+    historyUser,
     create,
     edit,
     deleted,
 };
-module.exports = sizeController;
+module.exports = transactionController;

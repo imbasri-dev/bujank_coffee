@@ -22,13 +22,13 @@ const getId = async (req, res) => {
     }
 };
 
-const create = async (req, res) => {
+const register = async (req, res) => {
     try {
-        const response = await userRepo.create(req.body);
+        const response = await userRepo.register(req.body);
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "account created successfully."),
-                data: response.rows,
+                data: response.data,
             },
         });
     } catch (err) {
@@ -70,7 +70,7 @@ const deleted = async (req, res) => {
 const userController = {
     get,
     getId,
-    create,
+    register,
     editPassword,
     deleted,
 };

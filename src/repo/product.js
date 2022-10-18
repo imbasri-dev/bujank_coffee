@@ -1,8 +1,75 @@
 const postgresDb = require("../config/postgre");
-const get = () => {
+const filterCategory = (queryParams) => {
     return new Promise((resolve, reject) => {
-        const query =
-            "select products.id,products.category_id,categories.category_name,products.* from products left join categories on products.category_id = categories.id order by products.id asc";
+        let query =
+            "select pr.*,p.code,p.valid,p.discount from products pr full join promos p on pr.id = p.product_id ";
+        // page
+        const values = [];
+        const whereParams = ["category"];
+        if (whereParams.length > 0) query += "where ";
+        whereParams.forEach((key) => {
+            query += ` lower(${key}) like lower($${values.length + 1})`;
+            values.push(String(queryParams[key]));
+        });
+        values.forEach((value) => console.log(typeof value));
+        // limit & offset untuk pagination
+        const page = Number(queryParams.page);
+        const limit = Number(queryParams.limit);
+        const offset = (page - 1) * limit;
+        query += `limit $${values.length + 1} offset $${values.length + 2}`;
+        values.push(limit, offset);
+        postgresDb.query(query, values, (err, result) => {
+            if (err) {
+                console.log(err);
+                return reject(err);
+            }
+            return resolve(result);
+        });
+    });
+};
+
+const getAll = (queryParams) => {
+    return new Promise((resolve, reject) => {
+        let query =
+            "select pr.*,p.code,p.valid,p.discount from products pr full join promos p on pr.id = p.product_id ";
+        // page
+        if (queryParams.search) {
+            query += `where lower(name) like lower('%${queryParams.search}%')`;
+        }
+        if (queryParams.category) {
+            if (queryParams.search) {
+                query += ` and where lower(category) like lower('${queryParams.category}')`;
+            } else {
+                query += ` where lower(category) like lower('${queryParams.category}')`;
+            }
+        }
+        if (queryParams["sort"] == "cheapest") {
+            query += "order by pr.price asc";
+        }
+        if (queryParams["sort"] == "expensive") {
+            query += "order by pr.price desc";
+        }
+        if (queryParams["sort"] == "newest") {
+            query += "order by create_at asc";
+        }
+        if (queryParams["sort"] == "lastest") {
+            query += "order by create_at desc";
+        }
+        if (queryParams["sort"] == "id_asc") {
+            query += "order by id asc";
+        }
+        if (queryParams["sort"] == "id_desc") {
+            query += "order by id desc";
+        }
+        if (queryParams["sort"] == "favorite") {
+            query =
+                "select pr.*,p.code,p.valid,p.discount,tr.qty from products pr inner join promos p on pr.id = p.product_id inner join transactions tr on pr.id = tr.product_id order by tr.qty desc";
+        }
+        let page = Number(queryParams.page);
+        let limit = Number(queryParams.limit);
+        let offset = (page - 1) * limit;
+        query += ` limit ${limit} offset ${offset}`;
+        // page
         postgresDb.query(query, (err, result) => {
             if (err) {
                 console.log(err);
@@ -13,15 +80,15 @@ const get = () => {
     });
 };
 
-const create = (body) => {
+const create = (body, file) => {
     return new Promise((resolve, reject) => {
-        const { category_id, product_name, price, stok, image, description } =
-            body;
+        const { name, category, size, price, stock, description } = body;
+        // const { image } = file;
         const query =
-            "insert into products (category_id,product_name,price,stok,image,description) values ($1,$2,$3,$4,$5,$6) returning *";
+            "insert into products (name, category, size, price, stock, image, description) values ($1,upper($2),$3,$4,$5,$6,$7) returning *";
         postgresDb.query(
             query,
-            [category_id, product_name, price, stok, image, description],
+            [name, category, size, price, stock, file, description],
             (err, queryResult) => {
                 if (err) {
                     console.log(err);
@@ -46,8 +113,6 @@ const edit = (body, params) => {
                 values.push(body[key], params.id);
                 return;
             }
-            console.log([idx]);
-
             query += `${key} = $${idx + 1},`;
             values.push(body[key]);
         });
@@ -77,7 +142,8 @@ const deleted = (params) => {
 };
 
 const productRepo = {
-    get,
+    getAll,
+    filterCategory,
     create,
     edit,
     deleted,

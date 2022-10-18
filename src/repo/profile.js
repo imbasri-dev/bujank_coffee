@@ -1,10 +1,12 @@
 const postgresDb = require("../config/postgre");
+let imageUpload = require("../middleware/upload");
 
-const get = () => {
+const getId = (params) => {
     return new Promise((resolve, reject) => {
-        const query = "select * from size id order by id asc";
-        postgresDb.query(query, (err, result) => {
+        const query = "select * from profiles where user_id = $1";
+        postgresDb.query(query, [params.user_id], (err, result) => {
             if (err) {
+                console.log(err);
                 return reject(err);
             }
             return resolve(result);
@@ -12,37 +14,22 @@ const get = () => {
     });
 };
 
-const create = (body) => {
+const editProfile = (body, params) => {
     return new Promise((resolve, reject) => {
-        const { size, cost } = body;
-
-        const query =
-            "insert into size (size,cost) values (upper($1),$2) returning size , cost";
-        postgresDb.query(query, [size, cost], (err, queryResult) => {
-            if (err) {
-                console.log(err);
-                return reject(err);
-            }
-            resolve(queryResult);
-        });
-    });
-};
-
-const edit = (body, params) => {
-    return new Promise((resolve, reject) => {
-        let query = "update size set ";
+        let query = "update profiles set ";
         const values = [];
         Object.keys(body).forEach((key, idx, array) => {
             if (idx === array.length - 1) {
-                query += `${key} = $${idx + 1} where id = $${
-                    idx + 2
-                } returning size,cost`;
-                values.push(body[key], params.id);
+                query += `${key} = $${idx + 1} where profiles.user_id = $${
+                    idx + 2 + `returning *`
+                }`;
+                values.push(body[key], params.user_id);
                 return;
             }
             query += `${key} = $${idx + 1},`;
             values.push(body[key]);
         });
+        console.log(values);
         postgresDb
             .query(query, values)
             .then((response) => {
@@ -54,10 +41,9 @@ const edit = (body, params) => {
             });
     });
 };
-
 const deleted = (params) => {
     return new Promise((resolve, reject) => {
-        const query = "delete from size where id = $1 returning id";
+        const query = "delete from profiles where user_id = $1";
         postgresDb.query(query, [params.id], (err, queryResult) => {
             if (err) {
                 console.log(err);
@@ -68,10 +54,9 @@ const deleted = (params) => {
     });
 };
 
-const sizeRepo = {
-    get,
-    create,
-    edit,
+const profileRepo = {
+    getId,
+    editProfile,
     deleted,
 };
-module.exports = sizeRepo;
+module.exports = profileRepo;

@@ -1,4 +1,5 @@
 node_modules
 .env
-
+public/*
 .ERD\Bujank_Coffee.sql
+supabase.md
