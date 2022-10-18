@@ -15,7 +15,10 @@ const editProfile = async (req, res) => {
         req.body.image = req.file.path;
     }
     try {
-        const response = await profileRepo.editProfile(req.body, req.params);
+        const response = await profileRepo.editProfile(
+            req.body,
+            req.userPayload.id
+        );
         sendResponse.success(res, 202, {
             msg: (response.text = "Profile changed successfully"),
             data: response.rows,

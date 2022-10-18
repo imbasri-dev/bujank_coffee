@@ -13,7 +13,7 @@ const getId = (token) => {
     });
 };
 
-const editProfile = (body, params) => {
+const editProfile = (body, token) => {
     return new Promise((resolve, reject) => {
         let query = "update profiles set ";
         const values = [];
@@ -22,7 +22,7 @@ const editProfile = (body, params) => {
                 query += `${key} = $${idx + 1} where profiles.user_id = $${
                     idx + 2 + `returning *`
                 }`;
-                values.push(body[key], params.user_id);
+                values.push(body[key], token);
                 return;
             }
             query += `${key} = $${idx + 1},`;

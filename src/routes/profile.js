@@ -18,7 +18,7 @@ profileRouter.get(
     getDataUserId
 );
 profileRouter.patch(
-    "/:user_id",
+    "/edit",
     isLogin(),
     allowedRole("user"),
     imageUpload.single("image"),
