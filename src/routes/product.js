@@ -21,7 +21,13 @@ productRouter.post(
     uploadImage.single("image"),
     create
 );
-productRouter.patch("/:id", isLogin(), allowRole("admin"), edit);
+productRouter.patch(
+    "/:id",
+    uploadImage.single("image"),
+    isLogin(),
+    allowRole("admin"),
+    edit
+);
 productRouter.delete("/:id", isLogin(), allowRole("admin"), deleted);
 
 module.exports = productRouter;

@@ -38,11 +38,10 @@ const create = async (req, res) => {
 
 const edit = async (req, res) => {
     try {
-        const response = await productRepo.edit(
-            req.body,
-            req.params,
-            req.file.path
-        );
+        if (req.file) {
+            req.body.image = req.file.path;
+        }
+        const response = await productRepo.edit(req.body, req.params);
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Product has ben changed"),
