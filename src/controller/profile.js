@@ -19,6 +19,7 @@ const editProfile = async (req, res) => {
             req.body,
             req.userPayload.id
         );
+        response.rows[0].image = `images/${req.file.filename}`;
         sendResponse.success(res, 202, {
             msg: (response.text = "Profile changed successfully"),
             data: response.rows,

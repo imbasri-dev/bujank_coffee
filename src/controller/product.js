@@ -24,6 +24,7 @@ const getAll = async (req, res) => {
 const create = async (req, res) => {
     try {
         const response = await productRepo.create(req.body, req.file.path);
+        response.rows[0].image = `/images/${req.file.filename}`;
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Product created successfully."),
@@ -42,6 +43,7 @@ const edit = async (req, res) => {
             req.body.image = req.file.path;
         }
         const response = await productRepo.edit(req.body, req.params);
+        response.rows[0].image = `/images/${req.file.filename}`; //ubah filename
         sendResponse.success(res, 201, {
             result: {
                 msg: (response.text = "Product has ben changed"),

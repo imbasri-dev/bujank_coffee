@@ -18,6 +18,6 @@ userRouter.post(
     validate.body("email", "password", "phone_number"),
     register
 );
-userRouter.patch("/edit", isLogin(), allowRole("user"), editPassword);
+userRouter.patch("/edit", isLogin(), allowRole("user", "admin"), editPassword);
 userRouter.delete("/:user_id", isLogin(), allowRole("admin"), deleted);
 module.exports = userRouter;
