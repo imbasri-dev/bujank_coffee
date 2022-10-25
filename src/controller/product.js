@@ -13,12 +13,13 @@ const filter = async (req, res) => {
 };
 const getAll = async (req, res) => {
     try {
-        const response = await productRepo.getAll(req.query);
+        const hostApi = `${req.protocol}://${req.hostname}:5000`;
+        const response = await productRepo.getAll(req.query, hostApi);
         sendResponse.success(res, 200, {
-            data: response.rows,
+            data: response,
         });
     } catch (err) {
-        sendResponse.error(res, 500, "Internal Server Error");
+        sendResponse.error(res, 500, err.message);
     }
 };
 const create = async (req, res) => {

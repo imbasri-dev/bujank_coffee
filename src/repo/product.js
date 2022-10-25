@@ -28,56 +28,131 @@ const filterCategory = (queryParams) => {
     });
 };
 
-const getAll = (queryParams) => {
+const getAll = (queryParams, hostAPI) => {
     return new Promise((resolve, reject) => {
         let query =
             "select pr.*,p.code,p.valid,p.discount from products pr full join promos p on pr.id = p.product_id ";
+
+        let queryLimit = "";
+        let link = `${hostAPI}/api/product/all?`;
         // page
         if (queryParams.search) {
             query += `where lower(name) like lower('%${queryParams.search}%')`;
+            link += `name=${queryParams.search}&`;
         }
         if (queryParams.category) {
             if (queryParams.search) {
                 query += ` and lower(category) like lower('${queryParams.category}')`;
+                link += `category=${queryParams.category}&`;
             } else {
                 query += ` where lower(category) like lower('${queryParams.category}')`;
+                link += `category=${queryParams.category}&`;
             }
         }
         if (queryParams["sort"] == "cheapest") {
             query += "order by pr.price asc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "expensive") {
             query += "order by pr.price desc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "newest") {
             query += "order by create_at asc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "lastest") {
             query += "order by create_at desc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "id_asc") {
             query += "order by id asc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "id_desc") {
             query += "order by id desc";
+            link += `sort=${queryParams.sort}&`;
         }
         if (queryParams["sort"] == "favorite") {
             query =
-                "select pr.*,p.code,p.valid,p.discount,tr.qty from products pr inner join promos p on pr.id = p.product_id inner join transactions tr on pr.id = tr.product_id order by tr.qty desc";
+                " select pr.*,p.code,p.valid,p.discount,tr.qty from products pr inner join promos p on pr.id = p.product_id inner join transactions tr on pr.id = tr.product_id order by tr.qty desc";
+            link += `sort=${queryParams.sort}&`;
         }
 
-        let page = Number(queryParams.page);
-        let limit = Number(queryParams.limit);
-        let offset = (page - 1) * limit;
-        query += ` limit ${limit} offset ${offset}`;
+        // let page = Number(queryParams.page);
+        // let limit = Number(queryParams.limit);
+        // let offset = (page - 1) * limit;
+        // query += ` limit ${limit} offset ${offset}`;
+
+        let values = [];
+        if (queryParams.page && queryParams.limit) {
+            let page = parseInt(queryParams.page);
+            let limit = parseInt(queryParams.limit);
+            let offset = (page - 1) * limit;
+            queryLimit = query + ` limit $1 offset $2`;
+            values.push(limit, offset);
+        } else {
+            queryLimit = query;
+        }
 
         // page
+        // postgresDb.query(query, (err, result) => {
+        //     if (err) {
+        //         console.log(err);
+        //         return reject(err);
+        //     }
+        //     return resolve(result);
+        // });
         postgresDb.query(query, (err, result) => {
-            if (err) {
-                console.log(err);
-                return reject(err);
-            }
-            return resolve(result);
+            postgresDb.query(queryLimit, values, (err, queryresult) => {
+                if (err) {
+                    console.log(err);
+                    return reject(err);
+                }
+                // console.log(queryresult);
+                // console.log(queryLimit);
+                if (queryresult.rows.length == 0)
+                    return reject(new Error("Product Not Found"));
+                let resNext = null;
+                let resPrev = null;
+                if (queryParams.page && queryParams.limit) {
+                    let page = parseInt(queryParams.page);
+                    let limit = parseInt(queryParams.limit);
+                    let start = (page - 1) * limit;
+                    let end = page * limit;
+                    let next = "";
+                    let prev = "";
+                    const dataNext = Math.ceil(result.rowCount / limit);
+                    if (start <= result.rowCount) {
+                        next = page + 1;
+                    }
+                    if (end > 0) {
+                        prev = page - 1;
+                    }
+                    if (parseInt(next) <= parseInt(dataNext)) {
+                        resNext = `${link}page=${next}&limit=${limit}`;
+                    }
+                    if (parseInt(prev) !== 0) {
+                        resPrev = `${link}page=${prev}&limit=${limit}`;
+                    }
+                    let sendResponse = {
+                        dataCount: result.rowCount,
+                        next: resNext,
+                        prev: resPrev,
+                        totalPage: Math.ceil(result.rowCount / limit),
+                        data: queryresult.rows,
+                    };
+                    return resolve(sendResponse);
+                }
+                let sendResponse = {
+                    dataCount: result.rowCount,
+                    next: resNext,
+                    prev: resPrev,
+                    totalPage: null,
+                    data: queryresult.rows,
+                };
+                return resolve(sendResponse);
+            });
         });
     });
 };

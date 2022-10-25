@@ -14,8 +14,19 @@ const login = async (req, res) => {
     }
 };
 
+const logout = async (req, res) => {
+    try {
+        const response = await authRepo.logout(req.userPayload);
+        sendResponse.success(res, 200, {
+            msg: "Logout Success",
+        });
+    } catch (err) {
+        sendResponse.error(res, 400, { msg: err.message });
+    }
+};
 const authController = {
     login,
+    logout,
 };
 
 module.exports = authController;

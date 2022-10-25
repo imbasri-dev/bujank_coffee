@@ -12,16 +12,82 @@ const get = () => {
         });
     });
 };
-const historyUser = (token) => {
+const historyUser = (token, queryParams) => {
     return new Promise((resolve, reject) => {
         let query = `select u.email,pr.name,pr.image,pr.price,tr.status from transactions tr inner join users u on tr.user_id = u.id inner join products pr on tr.product_id = pr.id inner join profiles pf on u.id = pf.user_id  where u.id = $1`;
 
+        let queryLimit = "";
+        let link = `http://localhost:5000/api/transaction/history?`;
+
+        let values = [token];
+        if (queryParams.page && queryParams.limit) {
+            let page = parseInt(queryParams.page);
+            let limit = parseInt(queryParams.limit);
+            let offset = (page - 1) * limit;
+            queryLimit = query + ` limit $2 offset $3`;
+            values.push(limit, offset);
+        } else {
+            queryLimit = query;
+        }
         postgresDb.query(query, [token], (err, result) => {
-            if (err) {
-                return reject(err);
-            }
-            return resolve(result);
+            postgresDb.query(queryLimit, values, (err, queryresult) => {
+                if (err) {
+                    console.log(err);
+                    return reject(err);
+                }
+                // console.log(queryresult);
+                // console.log(queryLimit);
+                if (queryresult.rows.length == 0)
+                    return reject(new Error("Product Not Found"));
+                let resNext = null;
+                let resPrev = null;
+                if (queryParams.page && queryParams.limit) {
+                    let page = parseInt(queryParams.page);
+                    let limit = parseInt(queryParams.limit);
+                    let start = (page - 1) * limit;
+                    let end = page * limit;
+                    let next = "";
+                    let prev = "";
+                    const dataNext = Math.ceil(result.rowCount / limit);
+                    if (start <= result.rowCount) {
+                        next = page + 1;
+                    }
+                    if (end > 0) {
+                        prev = page - 1;
+                    }
+                    if (parseInt(next) <= parseInt(dataNext)) {
+                        resNext = `${link}page=${next}&limit=${limit}`;
+                    }
+                    if (parseInt(prev) !== 0) {
+                        resPrev = `${link}page=${prev}&limit=${limit}`;
+                    }
+                    let sendResponse = {
+                        dataCount: result.rowCount,
+                        next: resNext,
+                        prev: resPrev,
+                        totalPage: Math.ceil(result.rowCount / limit),
+                        data: queryresult.rows,
+                    };
+                    return resolve(sendResponse);
+                }
+                let sendResponse = {
+                    dataCount: result.rowCount,
+                    next: resNext,
+                    prev: resPrev,
+                    totalPage: null,
+                    data: queryresult.rows,
+                    cek: console.log(result),
+                };
+                return resolve(sendResponse);
+            });
         });
+
+        // postgresDb.query(query, [token], (err, result) => {
+        //     if (err) {
+        //         return reject(err);
+        //     }
+        //     return resolve(result);
+        // });
     });
 };
 

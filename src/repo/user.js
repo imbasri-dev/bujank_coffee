@@ -32,34 +32,58 @@ const register = (body) => {
         let query = `insert into users (email, password, phone_number) values ($1, $2, $3) returning id, email`;
         const { email, password, phone_number } = body;
         // Hash Password
-        bcrypt.hash(password, 10, (err, hashedPasswords) => {
-            if (err) {
-                console.log(err);
-                return reject(err);
-            }
-            postgresDb.query(
-                query,
-                [email, hashedPasswords, phone_number],
-                (err, response) => {
-                    if (err) {
-                        console.log(err);
-                        return reject(err);
-                    }
-                    let getIDUsers = response.rows[0].id;
-                    let load = {
-                        email: response.rows[0].email,
-                    };
-                    let addIdToProfile = `insert into profiles (user_id) values (${getIDUsers})`;
-                    console.log(addIdToProfile);
-                    postgresDb.query(addIdToProfile, (err, queryResult) => {
-                        if (err) {
-                            return reject({ err });
-                        }
-                        resolve({ data: load.email, queryResult });
-                    });
+        postgresDb.query(
+            "select email from users where email = $1",
+            [email],
+            (err, resEmail) => {
+                if (resEmail.rows.length > 0) {
+                    return reject("Email already exist!");
                 }
-            );
-        });
+                postgresDb.query(
+                    "select phone_number from users where phone_number = $1",
+                    [phone_number],
+                    (err, resPhone) => {
+                        if (resPhone.rows.length > 0) {
+                            return reject("Phone Number already exist!");
+                        }
+                        bcrypt.hash(password, 10, (err, hashedPasswords) => {
+                            if (err) {
+                                console.log(err);
+                                return reject(err);
+                            }
+                            postgresDb.query(
+                                query,
+                                [email, hashedPasswords, phone_number],
+                                (err, response) => {
+                                    if (err) {
+                                        console.log(err);
+                                        return reject(err);
+                                    }
+                                    let getIDUsers = response.rows[0].id;
+                                    let load = {
+                                        email: response.rows[0].email,
+                                    };
+                                    let addIdToProfile = `insert into profiles (user_id) values (${getIDUsers})`;
+                                    console.log(addIdToProfile);
+                                    postgresDb.query(
+                                        addIdToProfile,
+                                        (err, queryResult) => {
+                                            if (err) {
+                                                return reject({ err });
+                                            }
+                                            resolve({
+                                                data: load.email,
+                                                queryResult,
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        });
+                    }
+                );
+            }
+        );
     });
 };
 const editPassword = (body, token) => {

@@ -1,10 +1,12 @@
 const postgreDb = require("../config/postgre.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const JWTR = require("jwt-redis").default;
+const client = require("../config/redis");
 // Login Authentikasi
 const login = (body) => {
     return new Promise((resolve, reject) => {
+        const jwtr = new JWTR(client);
         const { email, password } = body;
         // 1. Cek apakah ada email yang sama di database ?
         const getpasswordByEmailValues =
@@ -42,34 +44,55 @@ const login = (body) => {
                         email,
                         role: response.rows[0].role,
                     };
-                    jwt.sign(
-                        payload,
-                        process.env.SECRET_KEY,
-                        {
-                            expiresIn: "5m",
-                            issuer: process.env.ISSUER,
-                        },
-                        (err, token) => {
-                            if (err) {
-                                console.log(err);
-                                return reject({ err });
-                            }
-                            return resolve({
-                                id: payload.id,
-                                email: payload.email,
-                                role: payload.role,
-                                token,
-                            });
-                        }
-                    );
+                    jwtr.sign(payload, process.env.SECRET_KEY, {
+                        expiresIn: "5m",
+                        issuer: process.env.ISSUER,
+                    }).then((token) => {
+                        // Token verification
+                        const sendRespon = {
+                            token: token,
+                            email: payload.email,
+                        };
+                        return resolve(sendRespon);
+                    });
+                    // jwt.sign(
+                    //     payload,
+                    //     process.env.SECRET_KEY,
+                    //     {
+                    //         expiresIn: "5m",
+                    //         issuer: process.env.ISSUER,
+                    //     },
+                    //     (err, token) => {
+                    //         if (err) {
+                    //             console.log(err);
+                    //             return reject({ err });
+                    //         }
+                    //         return resolve({
+                    //             id: payload.id,
+                    //             email: payload.email,
+                    //             role: payload.role,
+                    //             token,
+                    //         });
+                    //     }
+                    // );
                 });
             }
         );
     });
 };
 
+const logout = (token) => {
+    return new Promise((resolve, reject) => {
+        const jwtr = new JWTR(client);
+        jwtr.destroy(token.jti).then((res) => {
+            if (!res) reject(new Error("Login First "));
+            resolve("Success logout account");
+        });
+    });
+};
 const authRepo = {
     login,
+    logout,
 };
 
 module.exports = authRepo;

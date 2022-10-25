@@ -35,7 +35,7 @@ const register = async (req, res) => {
         console.log(err);
         console.log(err.detail);
         sendResponse.error(res, 500, {
-            err: err.name,
+            err: err,
             msg: err.detail,
         });
     }
