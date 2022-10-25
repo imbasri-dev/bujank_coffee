@@ -7,17 +7,6 @@
 
 Bujank Coffee is everyone can drinks
 
-## ENDPOINT DETAILS
-
-| Endpoint     |            Method             | Info         |
-| ------------ | :---------------------------: | :----------- |
-| /auth        |            `POST`             | Auth         |
-| /user        | `POST` `GET` `PATCH` `DELETE` | Users        |
-| /profile     |     `POST` `GET` `PATCH`      | Profiles     |
-| /product     | `POST` `GET` `PATCH` `DELETE` | Products     |
-| /promo       | `POST` `GET` `PATCH` `DELETE` | Promos       |
-| /transaction | `POST` `GET` `PATCH` `DELETE` | Transactions |
-
 ## Built With
 
 ![nodejs](https://img.shields.io/badge/nodejs-16-brightgreen)
@@ -25,7 +14,6 @@ Bujank Coffee is everyone can drinks
 ![postgreSQL](https://img.shields.io/badge/postgreSQL-11-blue)
 
 ## Features
-
 1. Authentication system Login,Register with JWT
 2. Form input Validation, hash password.
 3. Searching and Sorting with Pagination.
@@ -54,6 +42,17 @@ $ npm start
 ```
 
 4. Bujank Coffee is Running
+
+## ENDPOINT DETAILS
+
+| Endpoint     |            Method             | Info         |
+| ------------ | :---------------------------: | :----------- |
+| /auth        |            `POST`             | Auth         |
+| /user        | `POST` `GET` `PATCH` `DELETE` | Users        |
+| /profile     |     `POST` `GET` `PATCH`      | Profiles     |
+| /product     | `POST` `GET` `PATCH` `DELETE` | Products     |
+| /promo       | `POST` `GET` `PATCH` `DELETE` | Promos       |
+| /transaction | `POST` `GET` `PATCH` `DELETE` | Transactions |
 
 ## Related Project
 
