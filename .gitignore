@@ -3,3 +3,4 @@ node_modules
 ERD/
 public/
 supabase.md
+vercel.json
