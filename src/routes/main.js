@@ -22,8 +22,15 @@ mainRouter.use(`${prefix}/transaction`, transactionRouter);
 mainRouter.use(`${prefix}/auth`, authRouter);
 // upload file umum
 mainRouter.post(`/upload`, imageUpload.single("image"), (req, res) => {
-    res.json({
-        url: `/images/${req.file.filename}`,
-    });
+   res.json({
+      url: `/images/${req.file.filename}`,
+   });
 });
+
+mainRouter.get(`/`, (req, res) => {
+   res.json({
+      msg: `Deploy Connected Success`,
+   });
+});
+
 module.exports = mainRouter;
