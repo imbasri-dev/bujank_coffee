@@ -54,6 +54,7 @@ const login = (body) => {
                      const sendRespon = {
                         token: token,
                         email: payload.email,
+                        role: payload.role,
                      };
                      return resolve(sendRespon);
                   });
