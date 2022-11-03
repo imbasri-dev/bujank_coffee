@@ -75,7 +75,8 @@ const getAll = (queryParams, hostAPI) => {
       }
       if (queryParams["sort"] == "favorite") {
          query =
-            " select pr.*,p.code,p.valid,p.discount,tr.qty from products pr left join promos p on pr.id = p.product_id inner join transactions tr on pr.id = tr.product_id order by tr.qty desc";
+            // " select pr.*,p.code,p.valid,p.discount,tr.qty from products pr left join promos p on pr.id = p.product_id left join transactions tr on pr.id = tr.product_id order by tr.qty desc";
+            " select pr.*,p.code,p.valid,p.discount,COALESCE(sum(tr.qty),0) as sold from products pr left join promos p on pr.id = p.product_id left join transactions tr on pr.id = tr.product_id GROUP BY pr.id,p.code,p.valid,p.discount ORDER by sold desc";
          link += `sort=${queryParams.sort}&`;
       }
 
@@ -142,6 +143,7 @@ const getAll = (queryParams, hostAPI) => {
                   totalPage: Math.ceil(result.rowCount / limit),
                   data: queryresult.rows,
                };
+
                return resolve(sendResponse);
             }
             let sendResponse = {

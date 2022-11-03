@@ -5,11 +5,11 @@ const allowRole = require("../middleware/allowRole");
 const validate = require("../middleware/validate");
 // isLogin() <= middleware, ngunci endpoint harus login
 const {
-    get,
-    getId,
-    register,
-    editPassword,
-    deleted,
+   get,
+   getId,
+   register,
+   editPassword,
+   deleted,
 } = require("../controller/user");
 userRouter.get("/all", isLogin(), allowRole("admin"), get);
 userRouter.get("/", isLogin(), allowRole("admin", "user"), getId);
