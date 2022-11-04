@@ -27,12 +27,7 @@ const {
    deleted,
 } = require("../controller/profile");
 
-profileRouter.get(
-   "/id",
-   isLogin(),
-   allowedRole("user", "admin"),
-   getDataUserId
-);
+profileRouter.get("/", isLogin(), allowedRole("user", "admin"), getDataUserId);
 profileRouter.patch(
    "/edit",
    isLogin(),
