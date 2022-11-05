@@ -1,31 +1,31 @@
 const multer = require("multer");
 const path = require("path");
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "./public/images");
-    },
-    filename: (req, file, cb) => {
-        const suffix = Date.now() + "-" + Math.round(Math.random() * 1e3);
-        const ext = path.extname(file.originalname);
-        const filename = `${file.fieldname}-${suffix}${ext}`;
-        cb(null, filename);
-    },
+   destination: (req, file, cb) => {
+      cb(null, "./public/images");
+   },
+   filename: (req, file, cb) => {
+      const suffix = Date.now() + "-" + Math.round(Math.random() * 1e3);
+      const ext = path.extname(file.originalname);
+      const filename = `${file.fieldname}-${suffix}${ext}`;
+      cb(null, filename);
+   },
 });
 
-const upload = multer({
-    storage,
-    fileFilter: (req, file, cb) => {
-        if (
-            file.mimetype == "image/png" ||
-            file.mimetype == "image/jpg" ||
-            file.mimetype == "image/jpeg"
-        ) {
-            cb(null, true);
-        } else {
-            return cb(new Error("Invalid file type"));
-        }
-    },
-    limits: { fileSize: 3e6 }, //limit file
+const diskUpload = multer({
+   storage,
+   fileFilter: (req, file, cb) => {
+      if (
+         file.mimetype == "image/png" ||
+         file.mimetype == "image/jpg" ||
+         file.mimetype == "image/jpeg"
+      ) {
+         cb(null, true);
+      } else {
+         return cb(new Error("Invalid file type"));
+      }
+   },
+   limits: { fileSize: 3e6 }, //limit file
 });
 // revisi multer limit dan jenis file ya
-module.exports = upload;
+module.exports = diskUpload;

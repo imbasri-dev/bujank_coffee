@@ -23,12 +23,14 @@ const getAll = async (req, res) => {
    }
 };
 const create = async (req, res) => {
-   try {
-      const response = await productRepo.create(
-         req.body,
-         (req.file.filename = `/images/${req.file.filename}`)
-      );
+   if (req.file) {
+      // req.file.filename = `/images/${req.file.filename}`; //ubah filename
+      req.file.filename = `/images/${req.file.filename}`; //ubah filename
+   }
 
+   // console.log(req.file.filename);
+   try {
+      const response = await productRepo.create(req.body, req.file.filename);
       // response.rows[0].image = `/images/${req.file.filename}`;
       sendResponse.success(res, 201, {
          result: {
