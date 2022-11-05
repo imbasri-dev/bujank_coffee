@@ -10,7 +10,7 @@ const uploader = async (req, res, next) => {
    const buffer = file.buffer;
    const ext = path.extname(file.originalname).toString();
    const datauri = parser.format(ext, buffer);
-   const fileName = `${body.name}`;
+   const fileName = `${body.displayname}`;
    const cloudinaryOpt = {
       public_id: fileName,
       folder: "bujank_coffee",

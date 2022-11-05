@@ -5,22 +5,20 @@ const isLogin = require("../middleware/isLogin");
 const allowedRole = require("../middleware/allowRole");
 const multer = require("multer");
 // validasi muulter sebelum masuk kedatabase
-const uploadImage = require("../middleware/upload");
+const cloudinaryUploader = require("../middleware/cloudinaryProfile");
+const { diskUpload, memoryUpload } = require("../middleware/upload");
+
 function uploadFile(req, res, next) {
-   const upload = uploadImage.single("image");
-   upload(req, res, function (err) {
+   memoryUpload.single("image")(req, res, function (err) {
       if (err instanceof multer.MulterError) {
-         // A Multer error occurred when uploading.
-         res.json("Size image minimum 3mb");
+         console.log(err);
+         return res.status(400).json({ msg: err.message });
       } else if (err) {
-         // Error File format
-         res.json("Format image Wrong!");
+         return res.json({ msg: err.message });
       }
-      // Everything went fine.
       next();
    });
 }
-
 const {
    getDataUserId,
    editProfile,
@@ -33,6 +31,7 @@ profileRouter.patch(
    isLogin(),
    allowedRole("user"),
    uploadFile,
+   cloudinaryUploader,
    editProfile
 );
 profileRouter.delete("/:user_id", deleted);

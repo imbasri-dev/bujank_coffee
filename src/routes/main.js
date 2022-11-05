@@ -8,7 +8,13 @@ const deliveryRouter = require("./delivery");
 const transactionRouter = require("./transaction");
 const authRouter = require("./auth");
 // import middleware
-const imageUpload = require("../middleware/upload");
+const {
+   diskUpload,
+   memoryUpload,
+   errorHandler,
+} = require("../middleware/upload");
+const cloudinaryUploader = require("../middleware/cloudinary");
+
 // main router
 const mainRouter = express.Router();
 const prefix = "/api"; //prefix
@@ -21,12 +27,25 @@ mainRouter.use(`${prefix}/delivery`, deliveryRouter);
 mainRouter.use(`${prefix}/transaction`, transactionRouter);
 mainRouter.use(`${prefix}/auth`, authRouter);
 // upload file umum
-mainRouter.post(`/upload`, imageUpload.single("image"), (req, res) => {
-   res.json({
-      url: `/images/${req.file.filename}`,
-   });
-});
-
+mainRouter.post(
+   "/cloud",
+   (req, res, next) =>
+      memoryUpload.single("image")(req, res, (err) => {
+         errorHandler(err, res, next);
+      }),
+   cloudinaryUploader,
+   (req, res) => {
+      console.log(req.file);
+      res.status(200).json({
+         msg: "Upload Success",
+         data: {
+            url: req.file.url,
+            secure: req.file.secure_url,
+            data: req.file.filename,
+         },
+      });
+   }
+);
 mainRouter.get(`/`, (req, res) => {
    res.json({
       msg: `Deploy Connected Success`,
