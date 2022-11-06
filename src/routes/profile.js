@@ -27,7 +27,7 @@ const {
 
 profileRouter.get("/", isLogin(), allowedRole("user", "admin"), getDataUserId);
 profileRouter.patch(
-   "/edit",
+   "/",
    isLogin(),
    allowedRole("user"),
    uploadFile,
