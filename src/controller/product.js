@@ -93,11 +93,23 @@ const deleted = async (req, res) => {
       sendResponse.error(res, 500, "Internal Server Error");
    }
 };
+
+const getId = async (req, res) => {
+   try {
+      const response = await productRepo.getId(req.params);
+      sendResponse.success(res, 202, {
+         data: response.rows,
+      });
+   } catch (err) {
+      sendResponse.error(res, 500, "Internal Server Error");
+   }
+};
 const productController = {
    filter,
    getAll,
    create,
    edit,
    deleted,
+   getId,
 };
 module.exports = productController;

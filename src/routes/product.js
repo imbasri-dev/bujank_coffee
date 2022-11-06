@@ -32,6 +32,7 @@ const {
    create,
    edit,
    deleted,
+   getId,
    getAll,
 } = require("../controller/product");
 
@@ -55,5 +56,6 @@ productRouter.patch(
    edit
 );
 productRouter.delete("/:id", isLogin(), allowRole("admin"), deleted);
+productRouter.get("/:id", isLogin(), allowRole("admin", "user"), getId);
 
 module.exports = productRouter;
