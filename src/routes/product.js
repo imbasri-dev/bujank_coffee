@@ -56,6 +56,6 @@ productRouter.patch(
    edit
 );
 productRouter.delete("/:id", isLogin(), allowRole("admin"), deleted);
-productRouter.get("/:id", isLogin(), allowRole("admin", "user"), getId);
+productRouter.get("/:id", getId);
 
 module.exports = productRouter;
