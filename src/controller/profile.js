@@ -10,30 +10,38 @@ const getDataUserId = async (req, res) => {
       sendResponse.error(res, 500, "Server Internal Error");
    }
 };
+
 const editProfile = async (req, res) => {
    try {
-      let url = req.file.url; //ubah filename
-      let image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
       if (req.file) {
+         // let url = req.file.url; //ubah filename
+         // let image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
          // req.file.filename = `/images/${req.file.filename}`; //ubah filename
-         image;
-         url;
+         // image;
+         // url;
+         // let image = (response.rows[0].image = req.file.secure_url);
+         req.body.image = req.file.secure_url;
       }
       const response = await profileRepo.editProfile(
          req.body,
-         req.userPayload.id,
-         (req.body.image = req.file.url)
+         req.userPayload.id
       );
+      // if (req.file) {
+      //    req.file.filename = `/images/${req.file.filename}`; //ubah filename
+      //    image;
+      //    url;
+      //    // response.rows[0].image = req.file.secure_url;
+      // }
       console.log(req.body);
-      response.rows[0].image = req.file.url;
+      // response.rows[0].image = req.file.url;
       sendResponse.success(res, 202, {
          msg: (response.text = "Profile changed successfully"),
          data: response.rows,
-         filename: image,
-         url,
+         // filename: image,
+         // url,
       });
    } catch (err) {
-      sendResponse.error(res, 500, "Internal Server Error");
+      sendResponse.error(res, 500, err.message);
    }
 };
 

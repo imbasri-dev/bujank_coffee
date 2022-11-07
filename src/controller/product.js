@@ -27,19 +27,19 @@ const create = async (req, res) => {
    console.log(req.body);
    console.log(req.file);
    try {
-      if (req.file) {
-         // req.file.filename = `/images/${req.file.filename}`; //ubah filename
-         var image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
-      }
-      const response = await productRepo.create(req.body, req.file.url);
+      // if (req.file) {
+      //    // req.file.filename = `/images/${req.file.filename}`; //ubah filename
+      //    var image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
+      // }
+      const response = await productRepo.create(req.body, req.file.secure_url);
       // response.rows[0].image = `/images/${req.file.filename}`;
       // console.log(req.file);
       sendResponse.success(res, 201, {
          result: {
             msg: (response.text = "Product created successfully."),
             data: response.rows,
-            filename: image,
-            url: req.file.url,
+            // filename: image,
+            // url: req.file.url,
          },
       });
    } catch (err) {
@@ -56,24 +56,28 @@ const edit = async (req, res) => {
       // console.log(req.file);
       console.log(req.body);
 
+      // if (req.file) {
+      //    // req.file.filename = `/images/${req.file.filename}`; //ubah filename
+      //    var image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
+      //    var url = req.file.url; //ubah filename
+      // }
+
       if (req.file) {
+         // let url = req.file.url; //ubah filename
+         // let image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
          // req.file.filename = `/images/${req.file.filename}`; //ubah filename
-         var image = `/${req.file.public_id}.${req.file.format}`; //ubah filename
-         var url = req.file.url; //ubah filename
+         // image;
+         // url;
+         // let image = (response.rows[0].image = req.file.secure_url);
+         req.body.image = req.file.secure_url;
       }
-      const response = await productRepo.edit(
-         req.body,
-         req.params,
-         (req.body.image = req.file.url)
-      );
+      const response = await productRepo.edit(req.body, req.params);
       console.log(req.body);
 
       sendResponse.success(res, 201, {
          result: {
             msg: (response.text = "Product has ben changed"),
             data: response.rows,
-            filename: image,
-            url,
          },
       });
    } catch (err) {
