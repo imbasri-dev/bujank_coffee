@@ -6,5 +6,4 @@ authRouter.post("/", authController.login);
 authRouter.delete("/", isLogin(), authController.logout);
 // Logout
 // authRouter.delete("/", (req, res) => {});
-
 module.exports = authRouter;
