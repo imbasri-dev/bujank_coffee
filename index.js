@@ -23,11 +23,7 @@ postgresDb
    .then(() => {
       console.log("Server Connected...!");
       // pasang parser untuk body
-      server.use(
-         cors({
-            origin: "*",
-         })
-      ); //cors options
+      server.use(cors()); //cors options
       server.use(express.static("./public")); // => data yang dipakai buat router get
       server.use(express.json());
       server.use(express.urlencoded({ extended: false }));
