@@ -14,7 +14,7 @@ const get = () => {
 };
 const historyUser = (token, queryParams) => {
    return new Promise((resolve, reject) => {
-      let query = `select u.email,pr.name,pr.image,pr.price,tr.status,tr.total from transactions tr inner join users u on tr.user_id = u.id inner join products pr on tr.product_id = pr.id inner join profiles pf on u.id = pf.user_id  where u.id = $1`;
+      let query = `select tr.id,u.email,pr.name,pr.image,pr.price,tr.status,tr.total from transactions tr inner join users u on tr.user_id = u.id inner join products pr on tr.product_id = pr.id inner join profiles pf on u.id = pf.user_id  where u.id = $1`;
 
       let queryLimit = "";
       let link = `http://localhost:5000/api/transaction/history?`;
