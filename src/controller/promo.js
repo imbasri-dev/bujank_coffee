@@ -63,8 +63,21 @@ const deleted = async (req, res) => {
       sendResponse.error(res, 500, "Internal Server Error");
    }
 };
+
+const getId = async (req, res) => {
+   try {
+      const response = await promoRepo.getId(req.params);
+      sendResponse.success(res, 202, {
+         data: response.rows,
+      });
+   } catch (err) {
+      sendResponse.error(res, 500, "Internal Server Error");
+   }
+};
+
 const sizeController = {
    get,
+   getId,
    create,
    searchPromo,
    edit,
